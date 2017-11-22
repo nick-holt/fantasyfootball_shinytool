@@ -68,7 +68,8 @@ scrape_ranks <- function(type_url) {
         colnames(ranks) <- c("consensus_rank", "player", "min", "max", "average", "sd")
         ranks <- ranks %>%
                 na.omit() %>%
-                mutate(player = str_sub(player, 1, -4))
+                mutate(player = str_sub(player, 1, -4),
+                       consensus_rank = as.numeric(consensus_rank))
         return(ranks)
 }
 
@@ -82,7 +83,8 @@ scrape_projections <- function(type_url) {
         colnames(projs) <- c("player", "proj_points")
         projs <- projs %>%
                 na.omit() %>%
-                mutate(player = str_sub(player, 1, -4))
+                mutate(player = str_sub(player, 1, -4),
+                       proj_points = as.numeric(proj_points))
         return(projs)
 }
 
@@ -90,6 +92,7 @@ scrape_projections <- function(type_url) {
 scrape_rank_proj <- function(type_url) {
         ranks <- scrape_ranks(type_url = type_url)
         projs <- scrape_projections(type_url = type_url)
-        data <- left_join(ranks, projs)
+        data <- left_join(ranks, projs) %>%
+                select(player, consensus_rank, proj_points)
         return(data)
 }
